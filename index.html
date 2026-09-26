@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 Physical Science Interactive Question Bank</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --error: #dc2626;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        header p {
+            color: var(--text-light);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Topic Selection View */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .topic-card {
+            background: #f1f5f9;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic-card:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .topic-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .topic-info span {
+            font-size: 12px;
+            color: var(--text-light);
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .topic-badge {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Quiz View */
+        #quiz-screen {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .question-box {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #166534 !important;
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--error) !important;
+            color: #991b1b !important;
+        }
+
+        .feedback-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .feedback-box.correct-fb {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .feedback-box.incorrect-fb {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        /* Results Screen */
+        #results-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-card {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .breakdown-table th, .breakdown-table td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        .breakdown-table th {
+            background: #f1f5f9;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Grade 6 Physical Science Interactive Question Bank</h1>
+        <p>National Assessment Learning Outcomes Framework — Interactive Practice & Evaluation System</p>
+    </header>
+
+    <!-- TOPIC SELECTION SCREEN -->
+    <div id="selection-screen">
+        <h2>Select a Topic or Standard to Practice</h2>
+        <p style="color: var(--text-light); margin-bottom: 20px;">Choose a specific standard below or test your knowledge across all topics.</p>
+        <div style="margin-bottom: 15px;">
+            <button class="btn-primary" onclick="startQuiz('all')">Take Comprehensive Test (All 127 Questions)</button>
+        </div>
+        <div class="topic-grid" id="topic-grid-container">
+            <!-- Dynamically populated topics -->
+        </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen">
+        <div class="quiz-header">
+            <span id="quiz-topic-title">Standard Name</span>
+            <span id="question-counter">Question 1 of 10</span>
+        </div>
+        <div class="question-box" id="question-text">Question text goes here...</div>
+        <div class="options-list" id="options-container">
+            <!-- Dynamically populated options -->
+        </div>
+        <div class="feedback-box" id="feedback-box"></div>
+        <div class="quiz-footer">
+            <span id="standard-tag" style="font-size: 12px; color: var(--text-light);">Standard: </span>
+            <button class="btn-primary" id="next-btn" onclick="nextQuestion()" style="display: none;">Next Question</button>
+        </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen">
+        <h2>Assessment Complete!</h2>
+        <div class="score-card" id="final-score">0 / 0</div>
+        <p id="score-message">Great effort!</p>
+        
+        <h3>Performance Breakdown by Standard</h3>
+        <table class="breakdown-table">
+            <thead>
+                <tr>
+                    <th>Standard Code</th>
+                    <th>Topic Description</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody id="breakdown-body">
+                <!-- Dynamically populated breakdown -->
+            </tbody>
+        </table>
+
+        <div class="actions">
+            <button class="btn-primary" onclick="resetToHome()">Back to Topics Menu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Complete Question Bank Data
+    const questionBank = [
+        // Standard 6-5-2-1-1
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "Which of the following is a physical property of matter that can be measured?",
+            options: ["A. Flammability", "B. Mass", "C. Ability to rust", "D. Reactivity with acid"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "What is the standard scientific unit for measuring mass?",
+            options: ["A. Liter", "B. Meter", "C. Kilogram", "D. Newton"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "Which material is a good conductor of heat and electricity?",
+            options: ["A. Rubber", "B. Copper", "C. Wood", "D. Plastic"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "An insulator is a material that:",
+            options: ["A. Allows heat and electricity to pass easily", "B. Stops or reduces the flow of heat and electricity", "C. Always melts when heated", "D. Is always a metal"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "In a solid, the molecules are:",
+            options: ["A. Far apart and moving freely", "B. Close together and vibrating in fixed positions", "C. Moving very fast and spreading out", "D. Constantly sliding over one another"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "In which state of matter do the molecules move freely and spread out to fill any container?",
+            options: ["A. Solid", "B. Liquid", "C. Gas", "D. Crystal"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "When a liquid is heated and changes into a gas, this process is called:",
+            options: ["A. Condensation", "B. Evaporation", "C. Freezing", "D. Melting"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "When a gas cools down and changes into a liquid, this process is called:",
+            options: ["A. Melting", "B. Condensation", "C. Sublimation", "D. Boiling"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "Density is calculated by dividing:",
+            options: ["A. Volume by mass", "B. Mass by volume", "C. Mass by time", "D. Area by volume"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "An object will float on water if its density is:",
+            options: ["A. Greater than the density of water", "B. Equal to the density of water", "C. Less than the density of water", "D. Exactly zero"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "A metal spoon feels cold because metals are good ______ of heat.",
+            options: ["A. insulators", "B. conductors", "C. solvents", "D. insulations"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-1",
+            title: "Physical properties of matter & states of matter",
+            q: "What happens to most materials when they are heated?",
+            options: ["A. They contract (shrink)", "B. They expand", "C. Their mass disappears", "D. They change into a new substance"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-1-2
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "A mixture can be defined as:",
+            options: ["A. Two or more substances chemically combined", "B. Two or more substances physically combined without a chemical bond", "C. A substance that cannot be separated", "D. Always a liquid"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "A compound is different from a mixture because a compound:",
+            options: ["A. Can be separated by physical methods", "B. Is formed by a chemical bond between elements", "C. Always contains air", "D. Has no definite composition"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "In a salt-water solution, the water is called the ______ and the salt is the ______.",
+            options: ["A. solute, solvent", "B. solvent, solute", "C. solution, solute", "D. solvent, solution"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "A saturated solution is one in which:",
+            options: ["A. No more solute can dissolve at that temperature", "B. The solute has just started to dissolve", "C. There is very little solute", "D. The solvent has evaporated"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "Which of the following increases the rate of dissolving a solid in water?",
+            options: ["A. Using cold water", "B. Stirring the mixture", "C. Leaving it still", "D. Using a large lump"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "Which factor does NOT affect the solubility of a solid in water?",
+            options: ["A. Temperature of the water", "B. Stirring / agitation", "C. Color of the solute", "D. Size of solute particles"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "Which method is best for separating sand from water?",
+            options: ["A. Evaporation", "B. Filtration", "C. Distillation", "D. Magnetism"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "Which method is used to obtain salt from salt water?",
+            options: ["A. Filtration", "B. Evaporation", "C. Using a magnet", "D. Decanting only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "Distillation is used mainly to separate:",
+            options: ["A. Sand from gravel", "B. A liquid from a solution and collect it pure", "C. Two solids of the same size", "D. Gases from solids only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "An important industrial application of distillation in Saudi Arabia is:",
+            options: ["A. Making plastics", "B. Desalination of sea water", "C. Mining gold", "D. Producing electricity"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "If 12 g of reactant A reacts with 8 g of reactant B, the mass of the product formed is:",
+            options: ["A. 4 g", "B. 10 g", "C. 20 g", "D. 96 g"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "The law of conservation of mass states that during a chemical reaction, mass is:",
+            options: ["A. Created", "B. Destroyed", "C. Neither created nor destroyed", "D. Changed into energy completely"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-2",
+            title: "Compounds, mixtures, solutions & conservation of mass",
+            q: "A dilute solution contains:",
+            options: ["A. A large amount of solute", "B. A small amount of solute", "C. No solvent at all", "D. Only saturated salt"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-1-3
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Which of the following is a sign that a chemical change has occurred?",
+            options: ["A. Melting of ice", "B. A new substance with new properties is formed", "C. Dissolving sugar in tea", "D. Cutting paper into pieces"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "In a chemical equation, the substances on the left side are called:",
+            options: ["A. Products", "B. Reactants", "C. Catalysts", "D. Solutions"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "According to the law of conservation of mass, a chemical equation must be:",
+            options: ["A. Colored", "B. Balanced", "C. Heated", "D. Written in words only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Burning of wood is an example of a ______ reaction.",
+            options: ["A. decomposition", "B. combustion", "C. neutralization", "D. physical"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Rusting of iron is classified as:",
+            options: ["A. A physical change", "B. A chemical change", "C. A change of state", "D. Evaporation"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Which factor increases the rate of a chemical reaction?",
+            options: ["A. Lowering the temperature", "B. Increasing the temperature", "C. Decreasing the concentration", "D. Removing the catalyst"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Powdered reactants react faster than large lumps because powder has:",
+            options: ["A. Less mass", "B. A larger surface area", "C. More color", "D. Higher temperature"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "A catalyst is a substance that:",
+            options: ["A. Stops a reaction completely", "B. Speeds up a reaction without being used up", "C. Changes the products into reactants", "D. Adds mass to the products"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "An exothermic reaction is one that:",
+            options: ["A. Absorbs heat from the surroundings", "B. Releases heat to the surroundings", "C. Has no energy change", "D. Only happens at 0°C"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Which of the following is an exothermic reaction?",
+            options: ["A. Photosynthesis", "B. Burning of fuel", "C. Melting of ice", "D. Dissolving ammonium salt"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "Which of the following is an endothermic reaction (absorbs heat)?",
+            options: ["A. Respiration", "B. Burning charcoal", "C. Photosynthesis", "D. Neutralization of acid and base"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-3",
+            title: "Chemical reactions, types & rate factors",
+            q: "In the equation 2H₂ + O₂ → 2H₂O, water (H₂O) is the:",
+            options: ["A. Reactant", "B. Product", "C. Catalyst", "D. Solvent"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-1-4
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "An acid is a substance that tastes ______ and turns blue litmus paper ______.",
+            options: ["A. bitter, red", "B. sour, red", "C. sour, blue", "D. sweet, red"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "A base is a substance that feels slippery and turns red litmus paper:",
+            options: ["A. Red", "B. Blue", "C. Green", "D. White"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "Which of the following is an example of an acid?",
+            options: ["A. Soap solution", "B. Vinegar (acetic acid)", "C. Baking soda solution", "D. Sea water only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "Which of the following is an example of a base?",
+            options: ["A. Lemon juice", "B. Vinegar", "C. Soap solution", "D. Orange juice"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "On the pH scale, a solution with a pH less than 7 is:",
+            options: ["A. A base", "B. An acid", "C. Neutral", "D. A salt"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "A solution with a pH of exactly 7 is:",
+            options: ["A. Strongly acidic", "B. Weakly basic", "C. Neutral", "D. Strongly basic"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "Which pH value represents a strong acid?",
+            options: ["A. 14", "B. 10", "C. 7", "D. 2"],
+            answer: 3
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "The reagent used to detect whether a solution is acidic or basic is:",
+            options: ["A. Litmus paper", "B. Filter paper", "C. Wax paper", "D. Sand paper"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "A neutralization reaction occurs when an acid reacts with a base to produce:",
+            options: ["A. Salt and water", "B. Salt and carbon dioxide", "C. Only heat", "D. A new acid"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "The neutralization reaction between hydrochloric acid and sodium hydroxide produces:",
+            options: ["A. Salt and hydrogen", "B. Salt and water", "C. Water and carbon dioxide", "D. Only salt"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "Uses of acids include all of the following EXCEPT:",
+            options: ["A. Used in car batteries (sulfuric acid)", "B. Used in food flavoring (citric acid)", "C. Used in cleaning drains (sodium hydroxide)", "D. Used in fertilizers"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-1-4",
+            title: "Acids, bases, pH & neutralization",
+            q: "Antacid tablets treat stomach pain because they:",
+            options: ["A. Add more acid to the stomach", "B. Neutralize excess stomach acid", "C. Are bases that increase acidity", "D. Have no chemical effect"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-2-1
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "A force can be defined as:",
+            options: ["A. A form of energy stored in objects", "B. A push or a pull that can change motion or shape", "C. The speed of an object", "D. The temperature of an object"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "When balanced forces act on an object, the object:",
+            options: ["A. Speeds up", "B. Slows down", "C. Remains at rest or moves at constant speed", "D. Changes direction"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "When unbalanced forces act on an object, the object:",
+            options: ["A. Always stops", "B. Always stays at rest", "C. Changes its speed or direction", "D. Loses its mass"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "The force that pulls objects toward the center of the Earth is:",
+            options: ["A. Friction", "B. Magnetism", "C. Gravity", "D. Elasticity"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "Friction is a force that:",
+            options: ["A. Helps objects move faster", "B. Opposes (resists) the motion of objects", "C. Only acts on magnets", "D. Acts only in water"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "Which of the following forces can act without direct contact between objects?",
+            options: ["A. Friction only", "B. Gravity and magnetism", "C. Normal force only", "D. Tension only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-1",
+            title: "Concept of force & types of forces",
+            q: "A force is needed to:",
+            options: ["A. Start a moving object stopping on its own", "B. Start, stop, or change the direction of an object", "C. Keep every object at rest forever without gravity", "D. Remove mass from an object"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-2-2
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "The position of an object is described relative to a:",
+            options: ["A. Thermometer", "B. Reference point", "C. Magnet", "D. Scale"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "Distance is:",
+            options: ["A. How far an object has moved", "B. The mass of an object", "C. The temperature of a place", "D. The push on an object"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "Newton's first law is also called the law of:",
+            options: ["A. Action-reaction", "B. Inertia", "C. Gravitation", "D. Acceleration"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "Inertia means:",
+            options: ["A. Objects resist changes to their motion", "B. Objects always accelerate", "C. Objects attract each other", "D. Objects lose energy"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "According to Newton's second law, if the same force pushes two objects, the object with less mass will:",
+            options: ["A. Accelerate more", "B. Accelerate less", "C. Not move", "D. Move at constant speed"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "The unit of acceleration is:",
+            options: ["A. m/s", "B. km/h", "C. m/s²", "D. N/kg"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "A cyclist speeds up from 4 m/s to 12 m/s in 4 seconds. The acceleration is:",
+            options: ["A. 2 m/s²", "B. 3 m/s²", "C. 4 m/s²", "D. 8 m/s²"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "Newton's third law states that for every action there is:",
+            options: ["A. An equal and opposite reaction", "B. A bigger reaction", "C. No reaction", "D. A slower action"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "When a rocket pushes gases downward, the gases push the rocket upward. This illustrates:",
+            options: ["A. First law", "B. Second law", "C. Third law", "D. Law of gravitation"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-2-2",
+            title: "Newton's laws of motion & acceleration",
+            q: "Changing the direction of a moving object, even at constant speed, means it is:",
+            options: ["A. Not accelerating", "B. Accelerating", "C. In equilibrium", "D. Losing mass"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-2-3
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "The gravitational force between two objects increases when:",
+            options: ["A. The distance between them increases", "B. Their masses increase", "C. Their temperature increases", "D. They are placed on a rough surface"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "The gravitational force between two objects decreases when the distance between them:",
+            options: ["A. Decreases", "B. Increases", "C. Stays the same", "D. Doubles only at night"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "Friction is generated when two surfaces:",
+            options: ["A. Are perfectly smooth", "B. Slide or rub against each other", "C. Are not touching", "D. Are both magnets"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "Friction increases when surfaces are:",
+            options: ["A. Smoother", "B. Rougher", "C. Lubricated", "D. Wet and oily"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "Air resistance is a type of friction between:",
+            options: ["A. Two solids only", "B. An object and the air moving past it", "C. Two liquids", "D. A magnet and a nail"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "A parachute works by:",
+            options: ["A. Increasing air resistance to slow the fall", "B. Decreasing gravity", "C. Increasing the mass of the skydiver", "D. Eliminating friction completely"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "Two north poles of magnets placed near each other will:",
+            options: ["A. Attract each other", "B. Repel each other", "C. Cancel each other", "D. Have no effect"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-2-3",
+            title: "Factors affecting gravity, friction & magnetism",
+            q: "A north pole and a south pole of two magnets will:",
+            options: ["A. Attract each other", "B. Repel each other", "C. Neutralize each other", "D. Disappear"],
+            answer: 0
+        },
+
+        // Standard 6-5-2-3-1
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "Work is done when a force moves an object through a:",
+            options: ["A. Temperature", "B. Distance", "C. Color", "D. Volume"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "The SI unit of both work and energy is the:",
+            options: ["A. Newton", "B. Joule", "C. Watt", "D. Pascal"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "Energy is defined as:",
+            options: ["A. The ability to do work", "B. The mass of an object", "C. The distance traveled", "D. The force of gravity"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "Potential energy is the energy an object has because of its:",
+            options: ["A. Motion", "B. Position or height", "C. Temperature", "D. Color"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "A rock held at the top of a hill has ______ energy.",
+            options: ["A. kinetic", "B. potential", "C. thermal", "D. sound"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "A moving car has ______ energy.",
+            options: ["A. potential", "B. kinetic", "C. chemical", "D. nuclear"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "When a stretched bow is released, its stored ______ energy changes into ______ energy of the arrow.",
+            options: ["A. kinetic, potential", "B. potential, kinetic", "C. thermal, sound", "D. chemical, kinetic"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "Which of the following is a simple machine?",
+            options: ["A. A lever", "B. An electric motor", "C. A battery", "D. A thermometer"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "A ramp (inclined plane) makes work easier by:",
+            options: ["A. Increasing the force needed", "B. Reducing the force needed", "C. Increasing the distance to lift straight up", "D. Removing friction completely"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-1",
+            title: "Energy, work, potential/kinetic energy & simple machines",
+            q: "Examples of simple machines used in daily life include all EXCEPT:",
+            options: ["A. A seesaw (lever)", "B. A ramp (inclined plane)", "C. A wheelbarrow", "D. A television remote"],
+            answer: 3
+        },
+
+        // Standard 6-5-2-3-2
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "The law of conservation of energy states that energy:",
+            options: ["A. Can be created but not destroyed", "B. Can be destroyed but not created", "C. Cannot be created or destroyed, only transformed", "D. Disappears when used"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "When a torch (flashlight) is on, electrical energy is transformed mainly into:",
+            options: ["A. Only chemical energy", "B. Light energy and heat energy", "C. Nuclear energy", "D. Sound energy only"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "At the highest point of a roller coaster, the car has maximum:",
+            options: ["A. Kinetic energy", "B. Potential energy", "C. Sound energy", "D. Chemical energy"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "As the roller coaster moves downward, potential energy changes into:",
+            options: ["A. Chemical energy", "B. Kinetic energy", "C. Nuclear energy", "D. Light energy"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "Rubbing your hands together transforms ______ energy into ______ energy.",
+            options: ["A. potential, kinetic", "B. kinetic, thermal (heat)", "C. sound, light", "D. chemical, potential"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-3-2",
+            title: "Law of conservation of energy",
+            q: "A solar cell transforms ______ energy into ______ energy.",
+            options: ["A. electrical, light", "B. light (solar), electrical", "C. heat, sound", "D. chemical, light"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-4-1
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "A wave is:",
+            options: ["A. A flow of matter from one place to another", "B. A disturbance that transfers energy from one place to another", "C. A solid object", "D. A type of force"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "Waves transfer ______ from one place to another without transferring ______.",
+            options: ["A. matter, energy", "B. energy, matter", "C. heat, light", "D. sound, energy"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "The highest point of a transverse wave is called the:",
+            options: ["A. Trough", "B. Crest", "C. Wavelength", "D. Amplitude"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "The lowest point of a transverse wave is called the:",
+            options: ["A. Crest", "B. Trough", "C. Rarefaction", "D. Compression"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "The distance between two successive crests is called the:",
+            options: ["A. Amplitude", "B. Frequency", "C. Wavelength", "D. Speed"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "Sound waves need a ______ to travel through.",
+            options: ["A. vacuum", "B. medium (solid, liquid, or gas)", "C. empty space", "D. mirror"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "Light waves can travel through:",
+            options: ["A. Only solids", "B. Only liquids", "C. Space (a vacuum)", "D. Only air"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "Sound travels fastest in:",
+            options: ["A. Gases", "B. Liquids", "C. Solids", "D. Vacuum"],
+            answer: 2
+        },
+        {
+            standard: "6-5-2-4-1",
+            title: "Waves & properties of sound/light waves",
+            q: "Sound waves are ______ waves, while light waves are ______ waves.",
+            options: ["A. transverse, longitudinal", "B. longitudinal, transverse", "C. mechanical, mechanical", "D. electromagnetic, mechanical"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-4-2
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "Reflection of light is:",
+            options: ["A. The bending of light as it enters a new medium", "B. The bouncing back of light when it hits a surface", "C. The absorption of all light", "D. The spreading of light into colors"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "Refraction of light is:",
+            options: ["A. The bouncing of light off a mirror", "B. The bending of light as it passes from one medium to another", "C. The complete stopping of light", "D. The heating of light"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "A pencil looks bent in a glass of water because of:",
+            options: ["A. Reflection", "B. Refraction", "C. Absorption", "D. Gravity"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "Mirrors work on the principle of:",
+            options: ["A. Refraction", "B. Reflection", "C. Absorption", "D. Diffusion"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "Lenses in eyeglasses work mainly on the principle of:",
+            options: ["A. Reflection only", "B. Refraction", "C. Sound transmission", "D. Magnetism"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "We see objects around us because light from them is ______ into our eyes.",
+            options: ["A. refracted", "B. reflected", "C. absorbed", "D. destroyed"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "The pitch of a sound (how high or low it is) depends on the:",
+            options: ["A. Amplitude", "B. Frequency", "C. Speed of the wave", "D. Medium color"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "The loudness (intensity) of a sound depends on the:",
+            options: ["A. Frequency", "B. Amplitude (energy of the wave)", "C. Wavelength only", "D. Color of the source"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "A high-frequency sound wave produces a ______ pitch.",
+            options: ["A. low", "B. high", "C. silent", "D. echo"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "Soft, thick curtains reduce sound in a room by ______ sound.",
+            options: ["A. reflecting", "B. absorbing", "C. refracting", "D. producing"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-4-2",
+            title: "Reflection, refraction & sound transmission",
+            q: "An echo is caused by the ______ of sound waves off hard surfaces.",
+            options: ["A. absorption", "B. reflection", "C. refraction", "D. diffusion"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-5-1
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "Two objects with like (same type) electric charges will:",
+            options: ["A. Attract each other", "B. Repel each other", "C. Have no interaction", "D. Stick together forever"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "Two objects with unlike (different) electric charges will:",
+            options: ["A. Repel each other", "B. Attract each other", "C. Explode", "D. Lose their charge instantly"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "Electric current is the flow of:",
+            options: ["A. Water through pipes", "B. Electric charges (electrons) through a conductor", "C. Heat through metal", "D. Light through fibers"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "For an electric current to flow in a circuit, the circuit must be:",
+            options: ["A. Open", "B. Closed", "C. Broken", "D. Made of plastic"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "In a series circuit, electric current has:",
+            options: ["A. Many different paths", "B. Only one path", "C. No path at all", "D. Two separate batteries"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "In a parallel circuit:",
+            options: ["A. All bulbs share one single path", "B. Current has more than one path", "C. Only one bulb can be connected", "D. The circuit cannot be switched off"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "If one bulb burns out in a series circuit, the other bulbs:",
+            options: ["A. Stay lit", "B. All go out", "C. Become brighter", "D. Change color"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "If one bulb burns out in a parallel circuit, the other bulbs:",
+            options: ["A. All go out", "B. Stay lit", "C. Flicker and die", "D. Draw less current"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-1",
+            title: "Electric charge & series/parallel circuits",
+            q: "Home electrical wiring is usually connected in ______ so appliances work independently.",
+            options: ["A. series", "B. parallel", "C. a single loop", "D. series-parallel mixed"],
+            answer: 1
+        },
+
+        // Standard 6-5-2-5-2
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "Every magnet has two poles called:",
+            options: ["A. East and West", "B. North and South", "C. Positive and Negative", "D. Front and Back"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "The poles of a magnet are the places where the magnetic force is:",
+            options: ["A. Weakest", "B. Strongest", "C. Zero", "D. Equal to zero"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "Like poles of two magnets ______, and unlike poles ______.",
+            options: ["A. attract, repel", "B. repel, attract", "C. attract, attract", "D. repel, repel"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "A permanent magnet is one that:",
+            options: ["A. Keeps its magnetism for a long time", "B. Loses its magnetism immediately", "C. Needs electric current to work", "D. Is only magnetic at night"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "An electromagnet is made by:",
+            options: ["A. Rubbing iron with wool", "B. Passing electric current through a coil of wire wrapped around an iron core", "C. Heating a magnet strongly", "D. Dropping a magnet in water"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "An electromagnet differs from a permanent magnet because an electromagnet:",
+            options: ["A. Cannot be turned off", "B. Can be turned on and off by switching the current", "C. Is always stronger", "D. Has no poles"],
+            answer: 1
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "Which of the following is a daily-life use of electromagnets?",
+            options: ["A. Lifting scrap iron in cranes", "B. Drawing with a pencil", "C. Cooking food", "D. Growing plants"],
+            answer: 0
+        },
+        {
+            standard: "6-5-2-5-2",
+            title: "Magnets & electromagnets",
+            q: "Magnets are used to generate electricity in:",
+            options: ["A. Solar cells", "B. Electric generators (dynamos)", "C. Batteries only", "D. Light bulbs"],
+            answer: 1
+        }
+    ];
+
+    let activeQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let userAnswersTracker = [];
+
+    // Initialize Menu
+    function initMenu() {
+        const grid = document.getElementById('topic-grid-container');
+        grid.innerHTML = '';
+        
+        // Group by standards
+        const standardsMap = {};
+        questionBank.forEach(q => {
+            if (!standardsMap[q.standard]) {
+                standardsMap[q.standard] = { title: q.title, count: 0, standard: q.standard };
+            }
+            standardsMap[q.standard].count++;
+        });
+
+        for (let std in standardsMap) {
+            const item = standardsMap[std];
+            const card = document.createElement('div');
+            card.className = 'topic-card';
+            card.onclick = () => startQuiz(std);
+            card.innerHTML = `
+                <div class="topic-info">
+                    <h3>${item.title}</h3>
+                    <span>Standard: ${item.standard}</span>
+                </div>
+                <div class="topic-badge">${item.count} Qs</div>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    function startQuiz(selection) {
+        if (selection === 'all') {
+            activeQuestions = [...questionBank];
+        } else {
+            activeQuestions = questionBank.filter(q => q.standard === selection);
+        }
+
+        currentIndex = 0;
+        score = 0;
+        userAnswersTracker = [];
+
+        document.getElementById('selection-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('results-screen').style.display = 'none';
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = activeQuestions[currentIndex];
+        document.getElementById('quiz-topic-title').innerText = q.title;
+        document.getElementById('question-counter').innerText = `Question ${currentIndex + 1} of ${activeQuestions.length}`;
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('standard-tag').innerText = `Standard Reference: ${q.standard}`;
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+
+        const feedback = document.getElementById('feedback-box');
+        feedback.style.display = 'none';
+        feedback.className = 'feedback-box';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function selectOption(selectedIdx, btnElement) {
+        const q = activeQuestions[currentIndex];
+        const buttons = document.querySelectorAll('.option-btn');
+        
+        buttons.forEach(b => b.disabled = true);
+
+        const isCorrect = selectedIdx === q.answer;
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            btnElement.classList.add('incorrect');
+            buttons[q.answer].classList.add('correct');
+        }
+
+        userAnswersTracker.push({
+            standard: q.standard,
+            title: q.title,
+            isCorrect: isCorrect
+        });
+
+        const feedback = document.getElementById('feedback-box');
+        feedback.style.display = 'block';
+        if (isCorrect) {
+            feedback.className = 'feedback-box correct-fb';
+            feedback.innerText = 'Correct! Great job.';
+        } else {
+            feedback.className = 'feedback-box incorrect-fb';
+            feedback.innerText = `Incorrect. The correct answer is: ${q.options[q.answer]}`;
+        }
+
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < activeQuestions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('results-screen').style.display = 'block';
+
+        const percentage = Math.round((score / activeQuestions.length) * 100);
+        document.getElementById('final-score').innerText = `${score} / ${activeQuestions.length} (${percentage}%)`;
+
+        let msg = "Excellent work! You've mastered this topic.";
+        if (percentage < 60) msg = "Good effort! Review the standards below to target areas for improvement.";
+        else if (percentage < 85) msg = "Well done! A little more practice will get you to perfection.";
+        document.getElementById('score-message').innerText = msg;
+
+        // Compile Breakdown
+        const breakdownMap = {};
+        userAnswersTracker.forEach(item => {
+            if (!breakdownMap[item.standard]) {
+                breakdownMap[item.standard] = { title: item.title, correct: 0, total: 0 };
+            }
+            breakdownMap[item.standard].total++;
+            if (item.isCorrect) breakdownMap[item.standard].correct++;
+        });
+
+        const tbody = document.getElementById('breakdown-body');
+        tbody.innerHTML = '';
+        for (let std in breakdownMap) {
+            const data = breakdownMap[std];
+            const pct = Math.round((data.correct / data.total) * 100);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><b>${std}</b></td>
+                <td>${data.title}</td>
+                <td>${data.correct} / ${data.total}</td>
+                <td><b>${pct}%</b></td>
+            `;
+            tbody.appendChild(row);
+        }
+    }
+
+    function resetToHome() {
+        document.getElementById('selection-screen').style.display = 'block';
+        document.getElementById('results-screen').style.display = 'none';
+        initMenu();
+    }
+
+    // Initialize on load
+    window.onload = initMenu;
+</script>
+
+</body>
+</html>
