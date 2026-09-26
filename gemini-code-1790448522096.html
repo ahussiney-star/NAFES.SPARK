@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 Physical Science Interactive Question Bank & Progress Tracker</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: #f1f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        input[type="text"], select, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-top: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+            width: auto;
+            padding: 6px 12px;
+            font-size: 14px;
+            float: right;
+            margin: 0;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .question-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .std-badge {
+            display: inline-block;
+            background: #eef2f7;
+            color: #4a5568;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .option-label {
+            display: block;
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option-label:hover {
+            background: #f1f5f9;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .user-header {
+            background: #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Grade 6 Physical Science Evaluation</h1>
+    <p class="subtitle">Interactive Question Bank & Topic Progress Tracker</p>
+
+    <!-- SECTION 1: LOGIN -->
+    <div id="login-section" class="card">
+        <h3>Student Login / Profile</h3>
+        <label for="studentNameInput">Enter Your Full Name:</label>
+        <input type="text" id="studentNameInput" placeholder="e.g., Ahmed Alashmawy">
+        <button onclick="loginStudent()">Log In & View My Progress</button>
+    </div>
+
+    <!-- SECTION 2: DASHBOARD & TOPIC SELECTOR -->
+    <div id="dashboard-section" class="hidden">
+        <div class="user-header">
+            Welcome, <span id="displayStudentName"></span>! 
+            <button class="logout-btn" onclick="logoutStudent()">Switch Student</button>
+        </div>
+
+        <div class="card">
+            <h3>📊 Your Topic Mastery & Progress Dashboard</h3>
+            <p>This table tracks your highest score recorded for each standard. Keep practicing to reach 100%!</p>
+            <div id="progressTableContainer"></div>
+        </div>
+
+        <div class="card">
+            <h3>🚀 Start a New Quiz</h3>
+            <label for="topicSelect">Select Topic / Standard:</label>
+            <select id="topicSelect">
+                <option value="all">🌟 Comprehensive Test (All 127 Questions)</option>
+                <option value="6-5-2-1-1">6-5-2-1-1: Physical properties of matter & states of matter (12 Qs)</option>
+                <option value="6-5-2-1-2">6-5-2-1-2: Compounds, mixtures, solutions & conservation of mass (13 Qs)</option>
+                <option value="6-5-2-1-3">6-5-2-1-3: Chemical reactions, types & rate factors (12 Qs)</option>
+                <option value="6-5-2-1-4">6-5-2-1-4: Acids, bases, pH & neutralization (12 Qs)</option>
+                <option value="6-5-2-2-1">6-5-2-2-1: Concept of force & types of forces (7 Qs)</option>
+                <option value="6-5-2-2-2">6-5-2-2-2: Newton's laws of motion & acceleration (10 Qs)</option>
+                <option value="6-5-2-2-3">6-5-2-2-3: Factors affecting gravity, friction & magnetism (8 Qs)</option>
+                <option value="6-5-2-3-1">6-5-2-3-1: Energy, work, potential/kinetic energy & simple machines (10 Qs)</option>
+                <option value="6-5-2-3-2">6-5-2-3-2: Law of conservation of energy (6 Qs)</option>
+                <option value="6-5-2-4-1">6-5-2-4-1: Waves & properties of sound/light waves (9 Qs)</option>
+                <option value="6-5-2-4-2">6-5-2-4-2: Reflection, refraction & sound transmission (11 Qs)</option>
+                <option value="6-5-2-5-1">6-5-2-5-1: Electric charge & series/parallel circuits (9 Qs)</option>
+                <option value="6-5-2-5-2">6-5-2-5-2: Magnets & electromagnets (8 Qs)</option>
+            </select>
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+    </div>
+
+    <!-- SECTION 3: QUIZ VIEW -->
+    <div id="quiz-section" class="hidden">
+        <div id="questions-container"></div>
+        <button onclick="submitQuiz()">Submit Answers & Save Progress</button>
+    </div>
+
+    <!-- SECTION 4: RESULTS VIEW -->
+    <div id="results-section" class="hidden card" style="text-align: center;">
+        <h2 id="scoreText"></h2>
+        <div id="breakdownText" style="text-align: left; margin-bottom: 20px;"></div>
+        <button onclick="returnToDashboard()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+    // Full Question Bank database
+    const questionBank = [
+        // Standard 6-5-2-1-1
+        {std: "6-5-2-1-1", q: "Which of the following is a physical property of matter that can be measured?", opts: ["A. Flammability", "B. Mass", "C. Ability to rust", "D. Reactivity with acid"], ans: 1},
+        {std: "6-5-2-1-1", q: "What is the standard scientific unit for measuring mass?", opts: ["A. Liter", "B. Meter", "C. Kilogram", "D. Newton"], ans: 2},
+        {std: "6-5-2-1-1", q: "Which material is a good conductor of heat and electricity?", opts: ["A. Rubber", "B. Copper", "C. Wood", "D. Plastic"], ans: 1},
+        {std: "6-5-2-1-1", q: "An insulator is a material that:", opts: ["A. Allows heat and electricity to pass easily", "B. Stops or reduces the flow of heat and electricity", "C. Always melts when heated", "D. Is always a metal"], ans: 1},
+        {std: "6-5-2-1-1", q: "In a solid, the molecules are:", opts: ["A. Far apart and moving freely", "B. Close together and vibrating in fixed positions", "C. Moving very fast and spreading out", "D. Constantly sliding over one another"], ans: 1},
+        {std: "6-5-2-1-1", q: "In which state of matter do the molecules move freely and spread out to fill any container?", opts: ["A. Solid", "B. Liquid", "C. Gas", "D. Crystal"], ans: 2},
+        {std: "6-5-2-1-1", q: "When a liquid is heated and changes into a gas, this process is called:", opts: ["A. Condensation", "B. Evaporation", "C. Freezing", "D. Melting"], ans: 1},
+        {std: "6-5-2-1-1", q: "When a gas cools down and changes into a liquid, this process is called:", opts: ["A. Melting", "B. Condensation", "C. Sublimation", "D. Boiling"], ans: 1},
+        {std: "6-5-2-1-1", q: "Density is calculated by dividing:", opts: ["A. Volume by mass", "B. Mass by volume", "C. Mass by time", "D. Area by volume"], ans: 1},
+        {std: "6-5-2-1-1", q: "An object will float on water if its density is:", opts: ["A. Greater than the density of water", "B. Equal to the density of water", "C. Less than the density of water", "D. Exactly zero"], ans: 2},
+        {std: "6-5-2-1-1", q: "A metal spoon feels cold because metals are good ______ of heat.", opts: ["A. insulators", "B. conductors", "C. solvents", "D. insulations"], ans: 1},
+        {std: "6-5-2-1-1", q: "What happens to most materials when they are heated?", opts: ["A. They contract (shrink)", "B. They expand", "C. Their mass disappears", "D. They change into a new substance"], ans: 1},
+
+        // Standard 6-5-2-1-2
+        {std: "6-5-2-1-2", q: "A mixture can be defined as:", opts: ["A. Two or more substances chemically combined", "B. Two or more substances physically combined without a chemical bond", "C. A substance that cannot be separated", "D. Always a liquid"], ans: 1},
+        {std: "6-5-2-1-2", q: "A compound is different from a mixture because a compound:", opts: ["A. Can be separated by physical methods", "B. Is formed by a chemical bond between elements", "C. Always contains air", "D. Has no definite composition"], ans: 1},
+        {std: "6-5-2-1-2", q: "In a salt-water solution, the water is called the ______ and the salt is the ______.", opts: ["A. solute, solvent", "B. solvent, solute", "C. solution, solute", "D. solvent, solution"], ans: 1},
+        {std: "6-5-2-1-2", q: "A saturated solution is one in which:", opts: ["A. No more solute can dissolve at that temperature", "B. The solute has just started to dissolve", "C. There is very little solute", "D. The solvent has evaporated"], ans: 0},
+        {std: "6-5-2-1-2", q: "Which of the following increases the rate of dissolving a solid in water?", opts: ["A. Using cold water", "B. Stirring the mixture", "C. Leaving it still", "D. Using a large lump"], ans: 1},
+        {std: "6-5-2-1-2", q: "Which factor does NOT affect the solubility of a solid in water?", opts: ["A. Temperature of the water", "B. Stirring / agitation", "C. Color of the solute", "D. Size of solute particles"], ans: 2},
+        {std: "6-5-2-1-2", q: "Which method is best for separating sand from water?", opts: ["A. Evaporation", "B. Filtration", "C. Distillation", "D. Magnetism"], ans: 1},
+        {std: "6-5-2-1-2", q: "Which method is used to obtain salt from salt water?", opts: ["A. Filtration", "B. Evaporation", "C. Using a magnet", "D. Decanting only"], ans: 1},
+        {std: "6-5-2-1-2", q: "Distillation is used mainly to separate:", opts: ["A. Sand from gravel", "B. A liquid from a solution and collect it pure", "C. Two solids of the same size", "D. Gases from solids only"], ans: 1},
+        {std: "6-5-2-1-2", q: "An important industrial application of distillation in Saudi Arabia is:", opts: ["A. Making plastics", "B. Desalination of sea water", "C. Mining gold", "D. Producing electricity"], ans: 1},
+        {std: "6-5-2-1-2", q: "If 12 g of reactant A reacts with 8 g of reactant B, the mass of the product formed is:", opts: ["A. 4 g", "B. 10 g", "C. 20 g", "D. 96 g"], ans: 2},
+        {std: "6-5-2-1-2", q: "The law of conservation of mass states that during a chemical reaction, mass is:", opts: ["A. Created", "B. Destroyed", "C. Neither created nor destroyed", "D. Changed into energy completely"], ans: 2},
+        {std: "6-5-2-1-2", q: "A dilute solution contains:", opts: ["A. A large amount of solute", "B. A small amount of solute", "C. No solvent at all", "D. Only saturated salt"], ans: 1},
+
+        // Standard 6-5-2-1-3
+        {std: "6-5-2-1-3", q: "Which of the following is a sign that a chemical change has occurred?", opts: ["A. Melting of ice", "B. A new substance with new properties is formed", "C. Dissolving sugar in tea", "D. Cutting paper into pieces"], ans: 1},
+        {std: "6-5-2-1-3", q: "In a chemical equation, the substances on the left side are called:", opts: ["A. Products", "B. Reactants", "C. Catalysts", "D. Solutions"], ans: 1},
+        {std: "6-5-2-1-3", q: "According to the law of conservation of mass, a chemical equation must be:", opts: ["A. Colored", "B. Balanced", "C. Heated", "D. Written in words only"], ans: 1},
+        {std: "6-5-2-1-3", q: "Burning of wood is an example of a ______ reaction.", opts: ["A. decomposition", "B. combustion", "C. neutralization", "D. physical"], ans: 1},
+        {std: "6-5-2-1-3", q: "Rusting of iron is classified as:", opts: ["A. A physical change", "B. A chemical change", "C. A change of state", "D. Evaporation"], ans: 1},
+        {std: "6-5-2-1-3", q: "Which factor increases the rate of a chemical reaction?", opts: ["A. Lowering the temperature", "B. Increasing the temperature", "C. Decreasing the concentration", "D. Removing the catalyst"], ans: 1},
+        {std: "6-5-2-1-3", q: "Powdered reactants react faster than large lumps because powder has:", opts: ["A. Less mass", "B. A larger surface area", "C. More color", "D. Higher temperature"], ans: 1},
+        {std: "6-5-2-1-3", q: "A catalyst is a substance that:", opts: ["A. Stops a reaction completely", "B. Speeds up a reaction without being used up", "C. Changes the products into reactants", "D. Adds mass to the products"], ans: 1},
+        {std: "6-5-2-1-3", q: "An exothermic reaction is one that:", opts: ["A. Absorbs heat from the surroundings", "B. Releases heat to the surroundings", "C. Has no energy change", "D. Only happens at 0°C"], ans: 1},
+        {std: "6-5-2-1-3", q: "Which of the following is an exothermic reaction?", opts: ["A. Photosynthesis", "B. Burning of fuel", "C. Melting of ice", "D. Dissolving ammonium salt"], ans: 1},
+        {std: "6-5-2-1-3", q: "Which of the following is an endothermic reaction (absorbs heat)?", opts: ["A. Respiration", "B. Burning charcoal", "C. Photosynthesis", "D. Neutralization of acid and base"], ans: 2},
+        {std: "6-5-2-1-3", q: "In the equation 2H₂ + O₂ → 2H₂O, water (H₂O) is the:", opts: ["A. Reactant", "B. Product", "C. Catalyst", "D. Solvent"], ans: 1},
+
+        // Standard 6-5-2-1-4
+        {std: "6-5-2-1-4", q: "An acid is a substance that tastes ______ and turns blue litmus paper ______.", opts: ["A. bitter, red", "B. sour, red", "C. sour, blue", "D. sweet, red"], ans: 1},
+        {std: "6-5-2-1-4", q: "A base is a substance that feels slippery and turns red litmus paper:", opts: ["A. Red", "B. Blue", "C. Green", "D. White"], ans: 1},
+        {std: "6-5-2-1-4", q: "Which of the following is an example of an acid?", opts: ["A. Soap solution", "B. Vinegar (acetic acid)", "C. Baking soda solution", "D. Sea water only"], ans: 1},
+        {std: "6-5-2-1-4", q: "Which of the following is an example of a base?", opts: ["A. Lemon juice", "B. Vinegar", "C. Soap solution", "D. Orange juice"], ans: 2},
+        {std: "6-5-2-1-4", q: "On the pH scale, a solution with a pH less than 7 is:", opts: ["A. A base", "B. An acid", "C. Neutral", "D. A salt"], ans: 1},
+        {std: "6-5-2-1-4", q: "A solution with a pH of exactly 7 is:", opts: ["A. Strongly acidic", "B. Weakly basic", "C. Neutral", "D. Strongly basic"], ans: 2},
+        {std: "6-5-2-1-4", q: "Which pH value represents a strong acid?", opts: ["A. 14", "B. 10", "C. 7", "D. 2"], ans: 3},
+        {std: "6-5-2-1-4", q: "The reagent used to detect whether a solution is acidic or basic is:", opts: ["A. Litmus paper", "B. Filter paper", "C. Wax paper", "D. Sand paper"], ans: 0},
+        {std: "6-5-2-1-4", q: "A neutralization reaction occurs when an acid reacts with a base to produce:", opts: ["A. Salt and water", "B. Salt and carbon dioxide", "C. Only heat", "D. A new acid"], ans: 0},
+        {std: "6-5-2-1-4", q: "The neutralization reaction between hydrochloric acid and sodium hydroxide produces:", opts: ["A. Salt and hydrogen", "B. Salt and water", "C. Water and carbon dioxide", "D. Only salt"], ans: 1},
+        {std: "6-5-2-1-4", q: "Uses of acids include all of the following EXCEPT:", opts: ["A. Used in car batteries (sulfuric acid)", "B. Used in food flavoring (citric acid)", "C. Used in cleaning drains (sodium hydroxide)", "D. Used in fertilizers"], ans: 2},
+        {std: "6-5-2-1-4", q: "Antacid tablets treat stomach pain because they:", opts: ["A. Add more acid to the stomach", "B. Neutralize excess stomach acid", "C. Are bases that increase acidity", "D. Have no chemical effect"], ans: 1},
+
+        // Standard 6-5-2-2-1
+        {std: "6-5-2-2-1", q: "A force can be defined as:", opts: ["A. A form of energy stored in objects", "B. A push or a pull that can change motion or shape", "C. The speed of an object", "D. The temperature of an object"], ans: 1},
+        {std: "6-5-2-2-1", q: "When balanced forces act on an object, the object:", opts: ["A. Speeds up", "B. Slows down", "C. Remains at rest or moves at constant speed", "D. Changes direction"], ans: 2},
+        {std: "6-5-2-2-1", q: "When unbalanced forces act on an object, the object:", opts: ["A. Always stops", "B. Always stays at rest", "C. Changes its speed or direction", "D. Loses its mass"], ans: 2},
+        {std: "6-5-2-2-1", q: "The force that pulls objects toward the center of the Earth is:", opts: ["A. Friction", "B. Magnetism", "C. Gravity", "D. Elasticity"], ans: 2},
+        {std: "6-5-2-2-1", q: "Friction is a force that:", opts: ["A. Helps objects move faster", "B. Opposes (resists) the motion of objects", "C. Only acts on magnets", "D. Acts only in water"], ans: 1},
+        {std: "6-5-2-2-1", q: "Which of the following forces can act without direct contact between objects?", opts: ["A. Friction only", "B. Gravity and magnetism", "C. Normal force only", "D. Tension only"], ans: 1},
+        {std: "6-5-2-2-1", q: "A force is needed to:", opts: ["A. Start a moving object stopping on its own", "B. Start, stop, or change the direction of an object", "C. Keep every object at rest forever without gravity", "D. Remove mass from an object"], ans: 1},
+
+        // Standard 6-5-2-2-2
+        {std: "6-5-2-2-2", q: "The position of an object is described relative to a:", opts: ["A. Thermometer", "B. Reference point", "C. Magnet", "D. Scale"], ans: 1},
+        {std: "6-5-2-2-2", q: "Distance is:", opts: ["A. How far an object has moved", "B. The mass of an object", "C. The temperature of a place", "D. The push on an object"], ans: 0},
+        {std: "6-5-2-2-2", q: "Newton's first law is also called the law of:", opts: ["A. Action-reaction", "B. Inertia", "C. Gravitation", "D. Acceleration"], ans: 1},
+        {std: "6-5-2-2-2", q: "Inertia means:", opts: ["A. Objects resist changes to their motion", "B. Objects always accelerate", "C. Objects attract each other", "D. Objects lose energy"], ans: 0},
+        {std: "6-5-2-2-2", q: "According to Newton's second law, if the same force pushes two objects, the object with less mass will:", opts: ["A. Accelerate more", "B. Accelerate less", "C. Not move", "D. Move at constant speed"], ans: 0},
+        {std: "6-5-2-2-2", q: "The unit of acceleration is:", opts: ["A. m/s", "B. km/h", "C. m/s²", "D. N/kg"], ans: 2},
+        {std: "6-5-2-2-2", q: "A cyclist speeds up from 4 m/s to 12 m/s in 4 seconds. The acceleration is:", opts: ["A. 2 m/s²", "B. 3 m/s²", "C. 4 m/s²", "D. 8 m/s²"], ans: 0},
+        {std: "6-5-2-2-2", q: "Newton's third law states that for every action there is:", opts: ["A. An equal and opposite reaction", "B. A bigger reaction", "C. No reaction", "D. A slower action"], ans: 0},
+        {std: "6-5-2-2-2", q: "When a rocket pushes gases downward, the gases push the rocket upward. This illustrates:", opts: ["A. First law", "B. Second law", "C. Third law", "D. Law of gravitation"], ans: 2},
+        {std: "6-5-2-2-2", q: "Changing the direction of a moving object, even at constant speed, means it is:", opts: ["A. Not accelerating", "B. Accelerating", "C. In equilibrium", "D. Losing mass"], ans: 1},
+
+        // Standard 6-5-2-2-3
+        {std: "6-5-2-2-3", q: "The gravitational force between two objects increases when:", opts: ["A. The distance between them increases", "B. Their masses increase", "C. Their temperature increases", "D. They are placed on a rough surface"], ans: 1},
+        {std: "6-5-2-2-3", q: "The gravitational force between two objects decreases when the distance between them:", opts: ["A. Decreases", "B. Increases", "C. Stays the same", "D. Doubles only at night"], ans: 1},
+        {std: "6-5-2-2-3", q: "Friction is generated when two surfaces:", opts: ["A. Are perfectly smooth", "B. Slide or rub against each other", "C. Are not touching", "D. Are both magnets"], ans: 1},
+        {std: "6-5-2-2-3", q: "Friction increases when surfaces are:", opts: ["A. Smoother", "B. Rougher", "C. Lubricated", "D. Wet and oily"], ans: 1},
+        {std: "6-5-2-2-3", q: "Air resistance is a type of friction between:", opts: ["A. Two solids only", "B. An object and the air moving past it", "C. Two liquids", "D. A magnet and a nail"], ans: 1},
+        {std: "6-5-2-2-3", q: "A parachute works by:", opts: ["A. Increasing air resistance to slow the fall", "B. Decreasing gravity", "C. Increasing the mass of the skydiver", "D. Eliminating friction completely"], ans: 0},
+        {std: "6-5-2-2-3", q: "Two north poles of magnets placed near each other will:", opts: ["A. Attract each other", "B. Repel each other", "C. Cancel each other", "D. Have no effect"], ans: 1},
+        {std: "6-5-2-2-3", q: "A north pole and a south pole of two magnets will:", opts: ["A. Attract each other", "B. Repel each other", "C. Neutralize each other", "D. Disappear"], ans: 0},
+
+        // Standard 6-5-2-3-1
+        {std: "6-5-2-3-1", q: "Work is done when a force moves an object through a:", opts: ["A. Temperature", "B. Distance", "C. Color", "D. Volume"], ans: 1},
+        {std: "6-5-2-3-1", q: "The SI unit of both work and energy is the:", opts: ["A. Newton", "B. Joule", "C. Watt", "D. Pascal"], ans: 1},
+        {std: "6-5-2-3-1", q: "Energy is defined as:", opts: ["A. The ability to do work", "B. The mass of an object", "C. The distance traveled", "D. The force of gravity"], ans: 0},
+        {std: "6-5-2-3-1", q: "Potential energy is the energy an object has because of its:", opts: ["A. Motion", "B. Position or height", "C. Temperature", "D. Color"], ans: 1},
+        {std: "6-5-2-3-1", q: "A rock held at the top of a hill has ______ energy.", opts: ["A. kinetic", "B. potential", "C. thermal", "D. sound"], ans: 1},
+        {std: "6-5-2-3-1", q: "A moving car has ______ energy.", opts: ["A. potential", "B. kinetic", "C. chemical", "D. nuclear"], ans: 1},
+        {std: "6-5-2-3-1", q: "When a stretched bow is released, its stored ______ energy changes into ______ energy of the arrow.", opts: ["A. kinetic, potential", "B. potential, kinetic", "C. thermal, sound", "D. chemical, kinetic"], ans: 1},
+        {std: "6-5-2-3-1", q: "Which of the following is a simple machine?", opts: ["A. A lever", "B. An electric motor", "C. A battery", "D. A thermometer"], ans: 0},
+        {std: "6-5-2-3-1", q: "A ramp (inclined plane) makes work easier by:", opts: ["A. Increasing the force needed", "B. Reducing the force needed", "C. Increasing the distance to lift straight up", "D. Removing friction completely"], ans: 1},
+        {std: "6-5-2-3-1", q: "Examples of simple machines used in daily life include all EXCEPT:", opts: ["A. A seesaw (lever)", "B. A ramp (inclined plane)", "C. A wheelbarrow", "D. A television remote"], ans: 3},
+
+        // Standard 6-5-2-3-2
+        {std: "6-5-2-3-2", q: "The law of conservation of energy states that energy:", opts: ["A. Can be created but not destroyed", "B. Can be destroyed but not created", "C. Cannot be created or destroyed, only transformed", "D. Disappears when used"], ans: 2},
+        {std: "6-5-2-3-2", q: "When a torch (flashlight) is on, electrical energy is transformed mainly into:", opts: ["A. Only chemical energy", "B. Light energy and heat energy", "C. Nuclear energy", "D. Sound energy only"], ans: 1},
+        {std: "6-5-2-3-2", q: "At the highest point of a roller coaster, the car has maximum:", opts: ["A. Kinetic energy", "B. Potential energy", "C. Sound energy", "D. Chemical energy"], ans: 1},
+        {std: "6-5-2-3-2", q: "As the roller coaster moves downward, potential energy changes into:", opts: ["A. Chemical energy", "B. Kinetic energy", "C. Nuclear energy", "D. Light energy"], ans: 1},
+        {std: "6-5-2-3-2", q: "Rubbing your hands together transforms ______ energy into ______ energy.", opts: ["A. potential, kinetic", "B. kinetic, thermal (heat)", "C. sound, light", "D. chemical, potential"], ans: 1},
+        {std: "6-5-2-3-2", q: "A solar cell transforms ______ energy into ______ energy.", opts: ["A. electrical, light", "B. light (solar), electrical", "C. heat, sound", "D. chemical, light"], ans: 1},
+
+        // Standard 6-5-2-4-1
+        {std: "6-5-2-4-1", q: "A wave is:", opts: ["A. A flow of matter from one place to another", "B. A disturbance that transfers energy from one place to another", "C. A solid object", "D. A type of force"], ans: 1},
+        {std: "6-5-2-4-1", q: "Waves transfer ______ from one place to another without transferring ______.", opts: ["A. matter, energy", "B. energy, matter", "C. heat, light", "D. sound, energy"], ans: 1},
+        {std: "6-5-2-4-1", q: "The highest point of a transverse wave is called the:", opts: ["A. Trough", "B. Crest", "C. Wavelength", "D. Amplitude"], ans: 1},
+        {std: "6-5-2-4-1", q: "The lowest point of a transverse wave is called the:", opts: ["A. Crest", "B. Trough", "C. Rarefaction", "D. Compression"], ans: 1},
+        {std: "6-5-2-4-1", q: "The distance between two successive crests is called the:", opts: ["A. Amplitude", "B. Frequency", "C. Wavelength", "D. Speed"], ans: 2},
+        {std: "6-5-2-4-1", q: "Sound waves need a ______ to travel through.", opts: ["A. vacuum", "B. medium (solid, liquid, or gas)", "C. empty space", "D. mirror"], ans: 1},
+        {std: "6-5-2-4-1", q: "Light waves can travel through:", opts: ["A. Only solids", "B. Only liquids", "C. Space (a vacuum)", "D. Only air"], ans: 2},
+        {std: "6-5-2-4-1", q: "Sound travels fastest in:", opts: ["A. Gases", "B. Liquids", "C. Solids", "D. Vacuum"], ans: 2},
+        {std: "6-5-2-4-1", q: "Sound waves are ______ waves, while light waves are ______ waves.", opts: ["A. transverse, longitudinal", "B. longitudinal, transverse", "C. mechanical, mechanical", "D. electromagnetic, mechanical"], ans: 1},
+
+        // Standard 6-5-2-4-2
+        {std: "6-5-2-4-2", q: "Reflection of light is:", opts: ["A. The bending of light as it enters a new medium", "B. The bouncing back of light when it hits a surface", "C. The absorption of all light", "D. The spreading of light into colors"], ans: 1},
+        {std: "6-5-2-4-2", q: "Refraction of light is:", opts: ["A. The bouncing of light off a mirror", "B. The bending of light as it passes from one medium to another", "C. The complete stopping of light", "D. The heating of light"], ans: 1},
+        {std: "6-5-2-4-2", q: "A pencil looks bent in a glass of water because of:", opts: ["A. Reflection", "B. Refraction", "C. Absorption", "D. Gravity"], ans: 1},
+        {std: "6-5-2-4-2", q: "Mirrors work on the principle of:", opts: ["A. Refraction", "B. Reflection", "C. Absorption", "D. Diffusion"], ans: 1},
+        {std: "6-5-2-4-2", q: "Lenses in eyeglasses work mainly on the principle of:", opts: ["A. Reflection only", "B. Refraction", "C. Sound transmission", "D. Magnetism"], ans: 1},
+        {std: "6-5-2-4-2", q: "We see objects around us because light from them is ______ into our eyes.", opts: ["A. refracted", "B. reflected", "C. absorbed", "D. destroyed"], ans: 1},
+        {std: "6-5-2-4-2", q: "The pitch of a sound (how high or low it is) depends on the:", opts: ["A. Amplitude", "B. Frequency", "C. Speed of the wave", "D. Medium color"], ans: 1},
+        {std: "6-5-2-4-2", q: "The loudness (intensity) of a sound depends on the:", opts: ["A. Frequency", "B. Amplitude (energy of the wave)", "C. Wavelength only", "D. Color of the source"], ans: 1},
+        {std: "6-5-2-4-2", q: "A high-frequency sound wave produces a ______ pitch.", opts: ["A. low", "B. high", "C. silent", "D. echo"], ans: 1},
+        {std: "6-5-2-4-2", q: "Soft, thick curtains reduce sound in a room by ______ sound.", opts: ["A. reflecting", "B. absorbing", "C. refracting", "D. producing"], ans: 1},
+        {std: "6-5-2-4-2", q: "An echo is caused by the ______ of sound waves off hard surfaces.", opts: ["A. absorption", "B. reflection", "C. refraction", "D. diffusion"], ans: 1},
+
+        // Standard 6-5-2-5-1
+        {std: "6-5-2-5-1", q: "Two objects with like (same type) electric charges will:", opts: ["A. Attract each other", "B. Repel each other", "C. Have no interaction", "D. Stick together forever"], ans: 1},
+        {std: "6-5-2-5-1", q: "Two objects with unlike (different) electric charges will:", opts: ["A. Repel each other", "B. Attract each other", "C. Explode", "D. Lose their charge instantly"], ans: 1},
+        {std: "6-5-2-5-1", q: "Electric current is the flow of:", opts: ["A. Water through pipes", "B. Electric charges (electrons) through a conductor", "C. Heat through metal", "D. Light through fibers"], ans: 1},
+        {std: "6-5-2-5-1", q: "For an electric current to flow in a circuit, the circuit must be:", opts: ["A. Open", "B. Closed", "C. Broken", "D. Made of plastic"], ans: 1},
+        {std: "6-5-2-5-1", q: "In a series circuit, electric current has:", opts: ["A. Many different paths", "B. Only one path", "C. No path at all", "D. Two separate batteries"], ans: 1},
+        {std: "6-5-2-5-1", q: "In a parallel circuit:", opts: ["A. All bulbs share one single path", "B. Current has more than one path", "C. Only one bulb can be connected", "D. The circuit cannot be switched off"], ans: 1},
+        {std: "6-5-2-5-1", q: "If one bulb burns out in a series circuit, the other bulbs:", opts: ["A. Stay lit", "B. All go out", "C. Become brighter", "D. Change color"], ans: 1},
+        {std: "6-5-2-5-1", q: "If one bulb burns out in a parallel circuit, the other bulbs:", opts: ["A. All go out", "B. Stay lit", "C. Flicker and die", "D. Draw less current"], ans: 1},
+        {std: "6-5-2-5-1", q: "Home electrical wiring is usually connected in ______ so appliances work independently.", opts: ["A. series", "B. parallel", "C. a single loop", "D. series-parallel mixed"], ans: 1},
+
+        // Standard 6-5-2-5-2
+        {std: "6-5-2-5-2", q: "Every magnet has two poles called:", opts: ["A. East and West", "B. North and South", "C. Positive and Negative", "D. Front and Back"], ans: 1},
+        {std: "6-5-2-5-2", q: "The poles of a magnet are the places where the magnetic force is:", opts: ["A. Weakest", "B. Strongest", "C. Zero", "D. Equal to zero"], ans: 1},
+        {std: "6-5-2-5-2", q: "Like poles of two magnets ______, and unlike poles ______.", opts: ["A. attract, repel", "B. repel, attract", "C. attract, attract", "D. repel, repel"], ans: 1},
+        {std: "6-5-2-5-2", q: "A permanent magnet is one that:", opts: ["A. Keeps its magnetism for a long time", "B. Loses its magnetism immediately", "C. Needs electric current to work", "D. Is only magnetic at night"], ans: 0},
+        {std: "6-5-2-5-2", q: "An electromagnet is made by:", opts: ["A. Rubbing iron with wool", "B. Passing electric current through a coil of wire wrapped around an iron core", "C. Heating a magnet strongly", "D. Dropping a magnet in water"], ans: 1},
+        {std: "6-5-2-5-2", q: "An electromagnet differs from a permanent magnet because an electromagnet:", opts: ["A. Cannot be turned off", "B. Can be turned on and off by switching the current", "C. Is always stronger", "D. Has no poles"], ans: 1},
+        {std: "6-5-2-5-2", q: "Which of the following is a daily-life use of electromagnets?", opts: ["A. Lifting scrap iron in cranes", "B. Drawing with a pencil", "C. Cooking food", "D. Growing plants"], ans: 0},
+        {std: "6-5-2-5-2", q: "Magnets are used to generate electricity in:", opts: ["A. Solar cells", "B. Electric generators (dynamos)", "C. Batteries only", "D. Light bulbs"], ans: 1}
+    ];
+
+    const standardNames = {
+        "6-5-2-1-1": "Physical properties & states of matter",
+        "6-5-2-1-2": "Compounds, mixtures, solutions & mass",
+        "6-5-2-1-3": "Chemical reactions & rate factors",
+        "6-5-2-1-4": "Acids, bases, pH & neutralization",
+        "6-5-2-2-1": "Concept & types of forces",
+        "6-5-2-2-2": "Newton's laws of motion",
+        "6-5-2-2-3": "Gravity, friction & magnetism factors",
+        "6-5-2-3-1": "Energy, work & simple machines",
+        "6-5-2-3-2": "Law of conservation of energy",
+        "6-5-2-4-1": "Waves & sound/light properties",
+        "6-5-2-4-2": "Reflection, refraction & sound",
+        "6-5-2-5-1": "Electric charge & circuits",
+        "6-5-2-5-2": "Magnets & electromagnets"
+    };
+
+    let currentUser = null;
+    let activeQuestions = [];
+
+    // Check if user was already logged in on this browser
+    window.onload = function() {
+        const savedUser = localStorage.getItem('science_quiz_current_user');
+        if (savedUser) {
+            currentUser = savedUser;
+            showDashboard();
+        }
+    };
+
+    function loginStudent() {
+        const nameInput = document.getElementById('studentNameInput').value.trim();
+        if (!nameInput) {
+            alert('Please enter your name to log in.');
+            return;
+        }
+        currentUser = nameInput;
+        localStorage.setItem('science_quiz_current_user', currentUser);
+        showDashboard();
+    }
+
+    function logoutStudent() {
+        localStorage.removeItem('science_quiz_current_user');
+        currentUser = null;
+        document.getElementById('studentNameInput').value = '';
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
+    }
+
+    function showDashboard() {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('results-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        document.getElementById('displayStudentName').innerText = currentUser;
+        renderProgressTable();
+    }
+
+    function getStudentData() {
+        let allData = JSON.parse(localStorage.getItem('science_quiz_progress') || '{}');
+        return allData[currentUser] || {};
+    }
+
+    function saveStudentData(standardStats) {
+        let allData = JSON.parse(localStorage.getItem('science_quiz_progress') || '{}');
+        if (!allData[currentUser]) {
+            allData[currentUser] = {};
+        }
+        
+        // Keep highest scores achieved per standard
+        for (let std in standardStats) {
+            let currentBest = allData[currentUser][std] || { correct: 0, total: standardStats[std].total };
+            if (standardStats[std].correct > currentBest.correct) {
+                allData[currentUser][std] = {
+                    correct: standardStats[std].correct,
+                    total: standardStats[std].total
+                };
+            }
+        }
+        localStorage.setItem('science_quiz_progress', JSON.stringify(allData));
+    }
+
+    function renderProgressTable() {
+        let studentScores = getStudentData();
+        let html = `<table>
+            <tr><th>Standard Code</th><th>Topic Description</th><th>Best Score</th><th>Status</th></tr>`;
+        
+        for (let std in standardNames) {
+            let record = studentScores[std];
+            let scoreText = record ? `${record.correct} / ${record.total}` : `0 / ${qCountForStd(std)}`;
+            let percent = record ? Math.round((record.correct / record.total) * 100) : 0;
+            let badge = percent >= 80 ? '🟢 Mastered' : (percent > 0 ? '🟡 In Progress' : '⚪ Not Attempted');
+
+            html += `<tr>
+                <td><strong>${std}</strong></td>
+                <td style="text-align: left;">${standardNames[std]}</td>
+                <td>${scoreText} (${percent}%)</td>
+                <td>${badge}</td>
+            </tr>`;
+        }
+        html += `</table>`;
+        document.getElementById('progressTableContainer').innerHTML = html;
+    }
+
+    function qCountForStd(stdCode) {
+        return questionBank.filter(q => q.std === stdCode).length;
+    }
+
+    function startQuiz() {
+        const selectedTopic = document.getElementById('topicSelect').value;
+        if (selectedTopic === 'all') {
+            activeQuestions = [...questionBank];
+        } else {
+            activeQuestions = questionBank.filter(q => q.std === selectedTopic);
+        }
+
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        activeQuestions.forEach((item, index) => {
+            let card = document.createElement('div');
+            card.className = 'question-card';
+            
+            let optionsHtml = '';
+            item.opts.forEach((opt, optIndex) => {
+                optionsHtml += `
+                    <label class="option-label">
+                        <input type="radio" name="q_${index}" value="${optIndex}"> ${opt}
+                    </label>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="std-badge">Standard: ${item.std}</div>
+                <div class="question-title">Q${index + 1}. ${item.q}</div>
+                ${optionsHtml}
+                <div class="feedback" id="feedback_${index}"></div>
+            `;
+            container.appendChild(card);
+        });
+
+        document.getElementById('dashboard-section').classList.add('hidden');
+        document.getElementById('quiz-section').classList.remove('hidden');
+        window.scrollTo(0,0);
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        let standardStats = {};
+
+        activeQuestions.forEach((item, index) => {
+            const radios = document.getElementsByName(`q_${index}`);
+            let selectedValue = -1;
+            for (let r of radios) {
+                if (r.checked) {
+                    selectedValue = parseInt(r.value);
+                    break;
+                }
+            }
+
+            const feedbackDiv = document.getElementById(`feedback_${index}`);
+            feedbackDiv.style.display = 'block';
+
+            if (!standardStats[item.std]) {
+                standardStats[item.std] = {total: 0, correct: 0};
+            }
+            standardStats[item.std].total++;
+
+            if (selectedValue === item.ans) {
+                score++;
+                standardStats[item.std].correct++;
+                feedbackDiv.className = 'feedback correct';
+                feedbackDiv.innerHTML = `Correct! ✓ (${item.opts[item.ans]})`;
+            } else {
+                feedbackDiv.className = 'feedback incorrect';
+                feedbackDiv.innerHTML = selectedValue === -1 ? `Unanswered. Correct: ${item.opts[item.ans]}` : `Incorrect. Correct: ${item.opts[item.ans]}`;
+            }
+        });
+
+        // Disable options
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+        // Save progress to localStorage
+        saveStudentData(standardStats);
+
+        let percentage = Math.round((score / activeQuestions.length) * 100);
+        document.getElementById('scoreText').innerHTML = `Quiz Completed! Score: ${score} / ${activeQuestions.length} (${percentage}%)`;
+
+        let breakdownHtml = '<h3>Performance Breakdown:</h3><ul>';
+        for (let std in standardStats) {
+            let st = standardStats[std];
+            let stPercent = Math.round((st.correct / st.total) * 100);
+            breakdownHtml += `<li><strong>Standard ${std}:</strong> ${st.correct}/${st.total} correct (${stPercent}%) - <em>Saved to your profile!</em></li>`;
+        }
+        breakdownHtml += '</ul>';
+
+        document.getElementById('breakdownText').innerHTML = breakdownHtml;
+        document.getElementById('quiz-section').classList.add('hidden');
+        document.getElementById('results-section').classList.remove('hidden');
+        window.scrollTo(0, 0);
+    }
+
+    function returnToDashboard() {
+        showDashboard();
+    }
+</script>
+
+</body>
+</html>
